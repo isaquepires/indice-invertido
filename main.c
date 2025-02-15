@@ -255,7 +255,7 @@ void die(char *nome_arquivo)
   if (!ler_arquivo(nome_arquivo))
   {
     printf("O arquivo não foi lido...\n");
-    printf("Execute novamente lendo o arquivo corretamente antes (opção 1)!\n");
+    printf("O texto precisa ser lido corretamente antes (opção 1)!\n");
     exit(1);
   }
 }
@@ -294,6 +294,7 @@ int main()
         total_palavras = criar_arquivo_invertido(nome_arquivo, indice);
         printf("Digite a palavra que deseja buscar: ");
         scanf("%s", palavra_busca);
+        converter_string_minusculo(palavra_busca);
         index = indice[encontrar_palavra(indice, total_palavras, palavra_busca)].qtd_ocorrencias;
         procurar_palavra(nome_arquivo, indice, total_palavras, palavra_busca, 0);
         break;
@@ -303,6 +304,7 @@ int main()
         total_palavras = criar_arquivo_invertido(nome_arquivo, indice);
         printf("Digite a palavra que deseja buscar: ");
         scanf("%s", palavra_busca);
+        converter_string_minusculo(palavra_busca);
         index = indice[encontrar_palavra(indice, total_palavras, palavra_busca)].qtd_ocorrencias;
         procurar_palavra(nome_arquivo, indice, total_palavras, palavra_busca, index);
         break;
