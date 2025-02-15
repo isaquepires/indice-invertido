@@ -109,7 +109,7 @@ FILE* ler_arquivo(char *texto)
   
   if (!arquivo)
   {
-    printf("erro ao abrir arquivo!");
+    printf("\nErro ao abrir arquivo!\n");
     return NULL;
   }
   
@@ -152,8 +152,6 @@ int criar_arquivo_invertido(char *nome_arquivo, ArquivoInvertido *indice)
     
     posicao++;
   }
-
-  fclose(arquivo);
     
   return total_palavras;
 }
@@ -181,19 +179,20 @@ void procurar_palavra(char *nome_arquivo, ArquivoInvertido *indice, int total_pa
   
   if (index == -1)
   {
-    printf("\n\"%s\" não foi encontrada.\n", palavra_busca);  
+    printf("\nA palavra \"%s\" não foi encontrada.\n", palavra_busca);  
     return;
   }
 
   if (!max_ocorrencias)
   {
     if (indice[index].qtd_ocorrencias > 1)
-      printf("\n\"%s\" foi encontrada %d vezes\n", palavra_busca, indice[index].qtd_ocorrencias);
+      printf("\nA palavra \"%s\" foi encontrada %d vezes\n", palavra_busca, indice[index].qtd_ocorrencias);
     else
-      printf("\n\"%s\" foi encontrada %d vez\n", palavra_busca, indice[index].qtd_ocorrencias);
+      printf("\nA palavra \"%s\" foi encontrada %d vez\n", palavra_busca, indice[index].qtd_ocorrencias);
   }
 
   max_ocorrencias++;
+  
 
   FILE *arquivo = fopen(nome_arquivo, "r");
   if (!arquivo)
@@ -234,77 +233,92 @@ void procurar_palavra(char *nome_arquivo, ArquivoInvertido *indice, int total_pa
 void funcoes_texto()
 {
   system("clear");
-  printf(" 1) Ler um arquivo texto\n");
-  printf(" 2) Apresentar o arquivo invertido\n");
-  printf(" 3) Procurar uma palavra no arquivo invertido\n");
-  printf(" 4) Procurar as próximas ocorrências\n");
-  printf(" 5) Sair do sistema\n");
+  printf("1) Ler um arquivo texto\n");
+  printf("2) Apresentar o arquivo invertido\n");
+  printf("3) Procurar uma palavra no arquivo invertido\n");
+  printf("4) Procurar as próximas ocorrências\n");
+  printf("5) Sair do sistema\n");
 }
-
 
 void voltar()
 {
   getchar();
-  printf("\nAperte qualquer tecla para voltar ao menu principal.\n");
+  printf("\nPressione qualquer tecla para voltar ao menu principal.\n");
   getchar();
   system("clear");
 }
 
+char nome_arquivo[100] = "Historia.txt";
+
+void die(char *nome_arquivo)
+{
+  if (!ler_arquivo(nome_arquivo))
+  {
+    printf("O arquivo não foi lido...\n");
+    printf("Execute novamente lendo o arquivo corretamente antes (opção 1)!\n");
+    exit(1);
+  }
+}
+
 int main()
 {
-  int ocorrencia = 0;
-  char *nome_arquivo = "Historia.txt";
   char palavra_busca[MAX_PALAVRA];
   ArquivoInvertido indice[MAX_PALAVRAS];
-  int total_palavras = criar_arquivo_invertido(nome_arquivo, indice);
+  int total_palavras;
   int opcoes;
   int index;
-  funcoes_texto();
-  printf("\n Digite a opção desejada:\n");
-  scanf("%d", &opcoes);
-  int max_ocorrencias = 0;
 
-  switch (opcoes)
+  while(1)
   {
-    case 1:
-      system("clear");
+    funcoes_texto();
+    printf("\nDigite a opção [1,2,3,4,5] desejada:\n");
+    scanf("%d", &opcoes);
+    switch (opcoes)
+    {
+      case 1:
+        system("clear");
+        printf("Digite o nome do arquivo: ");
+        scanf("%99s", nome_arquivo);
+        if (ler_arquivo(nome_arquivo))
+          printf("\nArquivo lido com sucesso!\n");
+        break;
+      case 2:
+        system("clear");
+        die(nome_arquivo);
+        total_palavras = criar_arquivo_invertido(nome_arquivo, indice);
+        exibir_invertido(indice, total_palavras);
+        break;
+      case 3:
+        system("clear");
+        die(nome_arquivo);
+        total_palavras = criar_arquivo_invertido(nome_arquivo, indice);
+        printf("Digite a palavra que deseja buscar: ");
+        scanf("%s", palavra_busca);
+        index = indice[encontrar_palavra(indice, total_palavras, palavra_busca)].qtd_ocorrencias;
+        procurar_palavra(nome_arquivo, indice, total_palavras, palavra_busca, 0);
+        break;
+      case 4:
+        system("clear");
+        die(nome_arquivo);
+        total_palavras = criar_arquivo_invertido(nome_arquivo, indice);
+        printf("Digite a palavra que deseja buscar: ");
+        scanf("%s", palavra_busca);
+        index = indice[encontrar_palavra(indice, total_palavras, palavra_busca)].qtd_ocorrencias;
+        procurar_palavra(nome_arquivo, indice, total_palavras, palavra_busca, index);
+        break;
+      case 5:
+        printf("saindo...\n");
+        exit(0);
+        break;
+      default:
+        printf("opção inválida\n");
+        getchar();
+        break;
+    }
+
+    voltar();
+    if (ler_arquivo(nome_arquivo))
       fclose(ler_arquivo(nome_arquivo));
-      printf(" arquivo lido com sucesso!\n");
-      voltar();
-      main();
-      break;
-    case 2:
-      system("clear");
-      exibir_invertido(indice, total_palavras);
-      voltar();
-      main();
-      break;
-    case 3:
-      system("clear");
-      printf("Digite a palavra que deseja buscar: ");
-      scanf("%s", palavra_busca);
-      index = indice[encontrar_palavra(indice, total_palavras, palavra_busca)].qtd_ocorrencias;
-      procurar_palavra(nome_arquivo, indice, total_palavras, palavra_busca, 0);
-      voltar();
-      main();
-      break;
-    case 4:
-      system("clear");
-      printf("Digite a palavra que deseja buscar: ");
-      scanf("%s", palavra_busca);
-      index = indice[encontrar_palavra(indice, total_palavras, palavra_busca)].qtd_ocorrencias;
-      procurar_palavra(nome_arquivo, indice, total_palavras, palavra_busca, index);
-      voltar();
-      main();
-      break;
-    case 5:
-      printf("saindo...\n");
-      exit(0);
-      break;
-    default:
-      printf("opção inválida\n");
-      exit(1);
-      break;
   }
 
   return 0;
